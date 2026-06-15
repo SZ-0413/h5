@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>一站式服务平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SimHei", "Microsoft YaHei", "PingFang SC", -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background-color: #f5f7fa;
+            overflow: hidden;
+        }
+
+        /* 顶部导航栏 */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            padding-top: calc(12px + env(safe-area-inset-top));
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .close-btn {
+            font-size: 28px;
+            color: #333;
+            cursor: pointer;
+            line-height: 1;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-title {
+            text-align: center;
+            flex: 1;
+        }
+
+        .header-title h1 {
+            font-size: 22px;
+            font-weight: 500;
+            color: #222;
+        }
+
+        .header-title p {
+            font-size: 14px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .more-btn {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .more-btn img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* 通行证头部图片区域 */
+        .pass-header {
+            position: relative;
+            width: 100%;
+            line-height: 0;
+        }
+
+        .pass-header img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .pass-header .pass-img-alt {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+        }
+
+        /* 图片切换动画：0.1s切换一次，总周期0.2s */
+        .pass-img-default {
+            animation: imgSwitchDefault 0.2s linear infinite;
+        }
+        .pass-img-alt {
+            animation: imgSwitchAlt 0.2s linear infinite;
+        }
+
+        @keyframes imgSwitchDefault {
+            0%, 50% { opacity: 1; }
+            50.01%, 100% { opacity: 0; }
+        }
+
+        @keyframes imgSwitchAlt {
+            0%, 50% { opacity: 0; }
+            50.01%, 100% { opacity: 1; }
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background-color: #fff;
+            border-radius: 16px;
+            margin: 16px;
+            overflow: hidden;
+        }
+
+        .card-top {
+            margin-top: -22px;
+            border-top-left-radius: 26px;
+            border-top-right-radius: 26px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 学生信息区域 */
+        .student-info {
+            padding: 24px 20px 16px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .info-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .info-item {
+            margin-bottom: 14px;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-size: 22px;
+            color: #888;
+            margin-bottom: 6px;
+            font-weight: 400;
+        }
+
+        .info-value {
+            font-size: 26px;
+            color: #2b6cdf;
+            font-weight: 500;
+            line-height: 1.4;
+            word-break: break-all;
+        }
+
+        /* 文字闪红动画：0.1s红 → 0.1s原色 */
+        .flash-red {
+            animation: textFlashRed 0.2s linear infinite;
+        }
+
+        @keyframes textFlashRed {
+            0%, 50% { color: #d92b2b; }
+            50.01%, 100% { color: #2b6cdf; }
+        }
+
+        /* 校徽区域 */
+        .info-right {
+            width: 200px;
+            height: 200px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .school-badge {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .school-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* 卡片中间虚线分隔 */
+        .card-divider {
+            position: relative;
+            width: 100%;
+            height: 1px;
+            border-top: 1px dashed #d8e0f0;
+        }
+        .card-divider::before,
+        .card-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #f5f7fa;
+            z-index: 1;
+        }
+        .card-divider::before { left: -8px; }
+        .card-divider::after { right: -8px; }
+
+        /* 有效期区域 */
+        .valid-period {
+            padding: 16px 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .valid-left .info-label {
+            font-size: 20px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .valid-left .info-value {
+            font-size: 26px;
+            color: #666;
+            font-weight: normal;
+        }
+
+        /* 时钟图标容器 */
+        .clock-wrap {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            flex-shrink: 0;
+        }
+
+        .clock-icon {
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* 校区按钮 */
+        .campus-btn {
+            margin: 0 auto 20px;
+            padding: 12px 30px;
+            border: 2px solid #93b8f0;
+            border-radius: 6px;
+            background-color: #f0f6ff;
+            color: #2b6cdf;
+            font-size: 28px;
+            text-align: center;
+            display: inline-block;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: pulse 2s ease-in-out infinite, btnFlashRed 0.2s linear infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(0.8); }
+            50% { transform: translateX(-50%) scale(1.08); }
+        }
+
+        /* 按钮闪红：0.1s切换一次 */
+        @keyframes btnFlashRed {
+            0%, 50% {
+                border-color: #f08080;
+                background-color: #fff1f0;
+                color: #d92b2b;
+            }
+            50.01%, 100% {
+                border-color: #93b8f0;
+                background-color: #f0f6ff;
+                color: #2b6cdf;
+            }
+        }
+
+        /* 动态验证码区域 */
+        .code-section {
+            padding: 20px;
+        }
+
+        .code-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        /* 数字方块背景切换：0.1s切换一次 */
+        .code-item {
+            flex: 1;
+            height: 60px;
+            background-image: url('code-bg.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: #fff;
+            font-size: 32px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            animation: bgSwitch 0.2s linear infinite;
+        }
+
+        @keyframes bgSwitch {
+            0%, 50% { background-image: url('code-bg.png'); }
+            50.01%, 100% { background-image: url('code-bg-2.png'); }
+        }
+
+        /* 分隔冒号闪红：0.1s切换一次 */
+        .code-separator {
+            display: flex;
+            align-items: center;
+            color: #999;
+            font-size: 32px;
+            line-height: 60px;
+            font-weight: 500;
+            animation: separatorFlashRed 0.2s linear infinite;
+        }
+
+        @keyframes separatorFlashRed {
+            0%, 50% { color: #d92b2b; }
+            50.01%, 100% { color: #999; }
+        }
+
+        /* 底部日期横线闪红：0.1s切换一次 */
+        .date-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .date-footer::before,
+        .date-footer::after {
+            content: '';
+            width: 80px;
+            height: 1px;
+            background-color: #2b6cdf;
+            animation: lineFlashRed 0.2s linear infinite;
+        }
+
+        @keyframes lineFlashRed {
+            0%, 50% { background-color: #d92b2b; }
+            50.01%, 100% { background-color: #2b6cdf; }
+        }
+
+        .date-footer span {
+            white-space: nowrap;
+        }
+
+        /* 小屏手机适配 */
+        @media (max-width: 375px) {
+            .info-label { font-size: 18px; }
+            .info-value { font-size: 22px; }
+            .info-right { width: 140px; height: 140px; }
+            .clock-wrap { width: 90px; height: 90px; }
+            .campus-btn { font-size: 24px; padding: 10px 24px; }
+            .code-item { height: 52px; font-size: 28px; }
+            .code-separator { font-size: 28px; line-height: 52px; }
+            .date-footer { font-size: 20px; }
+            .valid-left .info-label { font-size: 18px; }
+            .valid-left .info-value { font-size: 22px; }
+        }
+
+        @media (max-width: 320px) {
+            .student-info { padding: 20px 16px 12px; }
+            .info-right { width: 120px; height: 120px; }
+            .card { margin: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="header-bar">
+            <div class="close-btn">×</div>
+            <div class="header-title">
+                <h1>一站式服务平台</h1>
+                <p>tyrz.hnwomen.com</p>
+            </div>
+            <div class="more-btn">
+                <img src="more-btn.png" alt="更多">
+            </div>
+        </div>
+
+        <!-- 通行证头部图片 -->
+        <div class="pass-header">
+            <img src="pass-header.png" class="pass-img-default" alt="通行证">
+            <img src="pass-header-2.png" class="pass-img-alt" alt="通行证">
+        </div>
+
+        <!-- 学生信息卡片 -->
+        <div class="card card-top">
+            <div class="student-info">
+                <div class="info-left">
+                    <div class="info-item">
+                        <div class="info-label">学生</div>
+                        <div class="info-value flash-red">陈真</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">学号</div>
+                        <div class="info-value flash-red">2021504079</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">系部</div>
+                        <div class="info-value flash-red">艺术设计系</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">班级</div>
+                        <div class="info-value flash-red">
+                            2024级服装与服<br>
+                            饰设计（五年<br>
+                            专）1班-张矣<br>
+                            (2023080500)<br>
+                            (2023080500)
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 校徽图片 -->
+                <div class="info-right">
+                    <div class="school-badge">
+                        <img src="school-badge.png" class="pass-img-default" alt="校徽">
+                        <img src="school-badge-2.png" class="pass-img-alt" alt="校徽">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 虚线分隔 -->
+            <div class="card-divider"></div>
+
+            <div class="valid-period">
+                <div class="valid-left">
+                    <div class="info-label">有效期</div>
+                    <div class="info-value" id="validTime">2026-07-03 23:59:59</div>
+                </div>
+                <div class="clock-wrap">
+                    <img src="clock-icon.png" class="clock-icon pass-img-default" alt="时钟">
+                    <img src="clock-icon-2.png" class="clock-icon pass-img-alt" alt="时钟">
+                </div>
+            </div>
+        </div>
+
+        <!-- 动态验证码卡片 -->
+        <div class="card">
+            <div class="code-section">
+                <div class="campus-btn">旗山校区-东门</div>
+
+                <div class="code-container">
+                    <div class="code-item" id="code1">00</div>
+                    <div class="code-separator">:</div>
+                    <div class="code-item" id="code2">00</div>
+                    <div class="code-separator">:</div>
+                    <div class="code-item" id="code3">00</div>
+                    <div class="code-separator">:</div>
+                    <div class="code-item" id="code4">000</div>
+                </div>
+                
+                <div class="date-footer">
+                    <span id="currentDate">2026年06月17日</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 实时时间+毫秒连续递增（000-999，每秒一轮，按序变化）
+        function updateTime() {
+            const now = new Date();
+            
+            // 时分秒
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            // 毫秒 000-999 按序连续变化，每秒自动从000重新开始
+            const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+            
+            // 更新显示
+            document.getElementById('code1').textContent = hours;
+            document.getElementById('code2').textContent = minutes;
+            document.getElementById('code3').textContent = seconds;
+            document.getElementById('code4').textContent = milliseconds;
+            
+            // 更新日期
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            document.getElementById('currentDate').textContent = `${year}年${month}月${day}日`;
+
+            // 屏幕刷新率同步，保证毫秒顺滑连续递增
+            requestAnimationFrame(updateTime);
+        }
+
+        // 启动实时更新
+        updateTime();
+    </script>
+</body>
+</html>
